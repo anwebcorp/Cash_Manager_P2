@@ -202,7 +202,7 @@ export default function Home() {
                           type="submit"
                           className="flex-1 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-semibold transition-colors"
                         >
-                          Create Project
+                          Create Projects
                         </button>
                         <button
                           type="button"
