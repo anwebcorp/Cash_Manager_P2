@@ -13,7 +13,6 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectTab, setProjectTab] = useState('cash-in');
   const [showAddProject, setShowAddProject] = useState(false);
-  const [showProjectsModal, setShowProjectsModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [newProjectName, setNewProjectName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
@@ -96,120 +95,6 @@ export default function Home() {
 
   return (
     <>
-      {/* Projects Modal */}
-      {showProjectsModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full my-8">
-            {/* Modal Header */}
-            <div className="border-b p-6 flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">Projects</h2>
-              <button
-                onClick={() => {
-                  setShowProjectsModal(false);
-                  setShowAddProject(false);
-                  setNewProjectName('');
-                }}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
-              {/* Create New Project Section */}
-              {!showAddProject ? (
-                <button
-                  onClick={() => setShowAddProject(true)}
-                  className="w-full mb-6 bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors flex items-center justify-center space-x-2"
-                >
-                  <span>+</span>
-                  <span>New Project</span>
-                </button>
-              ) : (
-                <div className="mb-6 bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">Create New Project</h3>
-                  <form onSubmit={handleAddProject} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">Project Name</label>
-                      <input
-                        type="text"
-                        value={newProjectName}
-                        onChange={(e) => setNewProjectName(e.target.value)}
-                        placeholder="Enter project name"
-                        className="w-full border border-gray-300 p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                        required
-                      />
-                    </div>
-                    <div className="flex gap-3">
-                      <button
-                        type="submit"
-                        className="flex-1 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-semibold transition-colors"
-                      >
-                        Create Project
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowAddProject(false);
-                          setNewProjectName('');
-                        }}
-                        className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-semibold transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              )}
-
-              {/* Projects List */}
-              {projects.length > 0 && (
-                <div className="space-y-3">
-                  {projects.map((project) => (
-                    <div
-                      key={project.id}
-                      className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
-                      onClick={() => {
-                        setSelectedProject(project);
-                        setProjectTab('cash-out');
-                        setShowProjectsModal(false);
-                        setShowAddProject(false);
-                      }}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-start space-x-3">
-                          <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 flex-shrink-0">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7a2 2 0 012-2h14a2 2 0 012 2m0 0V5a2 2 0 00-2-2H5a2 2 0 00-2 2v2" />
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="font-bold text-gray-900">{project.name}</p>
-                            <p className="text-sm text-gray-500">No description</p>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedProject(project);
-                                setProjectTab('cash-out');
-                                setShowProjectsModal(false);
-                              }}
-                              className="text-sm text-emerald-600 hover:text-emerald-700 font-semibold mt-2"
-                            >
-                              Add Cash Out →
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -281,32 +166,303 @@ export default function Home() {
         <div className="px-6 py-8">
           {selectedProject ? (
             <div className="space-y-8">
-              {/* Current Project Display */}
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7a2 2 0 012-2h14a2 2 0 012 2m0 0V5a2 2 0 00-2-2H5a2 2 0 00-2 2v2" />
-                  </svg>
-                  <div>
-                    <p className="text-sm font-semibold text-emerald-700">Current Project</p>
-                    <p className="text-lg font-bold text-emerald-900">{selectedProject.name}</p>
+              {/* Projects Horizontal Scroll Section */}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center px-2">
+                  <h3 className="text-lg font-bold text-gray-900">Projects</h3>
+                  {!showAddProject && (
+                    <button
+                      onClick={() => setShowAddProject(true)}
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg font-semibold transition-colors flex items-center space-x-2 text-sm"
+                    >
+                      <span>+</span>
+                      <span>New</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Create New Project Form */}
+                {showAddProject && (
+                  <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Create New Project</h3>
+                    <form onSubmit={handleAddProject} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Project Name</label>
+                        <input
+                          type="text"
+                          value={newProjectName}
+                          onChange={(e) => setNewProjectName(e.target.value)}
+                          placeholder="Enter project name"
+                          className="w-full border border-gray-300 p-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          required
+                        />
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          type="submit"
+                          className="flex-1 px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 font-semibold transition-colors"
+                        >
+                          Create Project
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowAddProject(false);
+                            setNewProjectName('');
+                          }}
+                          className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-semibold transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
                   </div>
+                )}
+
+                {/* Horizontal Scrollable Projects */}
+                {projects.length > 0 && (
+                  <div className="overflow-x-auto pb-4">
+                    <div className="flex gap-3 md:gap-4" style={{ minWidth: 'min-content' }}>
+                      {projects.map((project) => (
+                        <div
+                          key={project.id}
+                          onClick={() => {
+                            setSelectedProject(project);
+                            setProjectTab('cash-out');
+                          }}
+                          className={`flex-shrink-0 w-40 h-40 md:w-44 md:h-44 lg:w-48 lg:h-48 rounded-2xl p-4 md:p-5 cursor-pointer transition-all transform hover:scale-105 hover:shadow-lg ${
+                            selectedProject?.id === project.id
+                              ? 'bg-emerald-500 text-white shadow-lg'
+                              : 'bg-white border-2 border-gray-200 text-gray-900 hover:border-emerald-500'
+                          }`}
+                        >
+                          <div className="flex flex-col h-full justify-between">
+                            <div>
+                              <div className={`w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center mb-2 md:mb-4 ${
+                                selectedProject?.id === project.id
+                                  ? 'bg-emerald-600'
+                                  : 'bg-emerald-100'
+                              }`}>
+                                <svg className={`w-5 h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 ${selectedProject?.id === project.id ? 'text-white' : 'text-emerald-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7a2 2 0 012-2h14a2 2 0 012 2m0 0V5a2 2 0 00-2-2H5a2 2 0 00-2 2v2" />
+                                </svg>
+                              </div>
+                              <p className="font-bold text-sm md:text-base lg:text-lg mb-1 md:mb-2 truncate">{project.name}</p>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedProject(project);
+                                setProjectTab('cash-out');
+                              }}
+                              className={`text-xs md:text-sm font-semibold mt-2 md:mt-4 transition-colors ${
+                                selectedProject?.id === project.id
+                                  ? 'text-emerald-100 hover:text-white'
+                                  : 'text-emerald-600 hover:text-emerald-700'
+                              }`}
+                            >
+                              Add Cash Out →
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Menu Items for MD screens */}
+              <div className="space-y-4 max-w-2xl mx-auto hidden md:block lg:hidden">
+                <button
+                  onClick={() => setProjectTab('cash-out')}
+                  className={`w-full px-6 py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center space-x-3 ${
+                    projectTab === 'cash-out'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                  <span>Cash Out</span>
+                </button>
+
+                <button
+                  onClick={() => setProjectTab('cash-in')}
+                  className={`w-full px-6 py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center space-x-3 ${
+                    projectTab === 'cash-in'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                  </svg>
+                  <span>Cash In</span>
+                </button>
+
+                <button
+                  onClick={() => setProjectTab('cashout-history')}
+                  className={`w-full px-6 py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center space-x-3 ${
+                    projectTab === 'cashout-history'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Cash Out History</span>
+                </button>
+
+                <button
+                  onClick={() => setProjectTab('cashin-history')}
+                  className={`w-full px-6 py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center space-x-3 ${
+                    projectTab === 'cashin-history'
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
+                  }`}
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Cash In History</span>
+                </button>
+
+                <button
+                  onClick={() => setProjectTab('accounts')}
+                  className="w-full px-6 py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center space-x-3 bg-white text-gray-900 hover:bg-gray-100 border border-gray-200"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span>Accounts</span>
+                </button>
+              </div>
+
+              {/* Desktop Layout - 30% Left 70% Right */}
+              <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8 mt-12">
+                {/* Left Sidebar - 30% */}
+                <div className="lg:col-span-1">
+                  <div className="space-y-3 sticky top-8">
+                    <h3 className="text-lg font-bold text-gray-900 px-2">Actions</h3>
+                    
+                    <button
+                      onClick={() => setProjectTab('cash-out')}
+                      className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-colors flex items-center justify-start space-x-2 ${
+                        projectTab === 'cash-out'
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                      </svg>
+                      <span>Cash Out</span>
+                    </button>
+
+                    <button
+                      onClick={() => setProjectTab('cash-in')}
+                      className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-colors flex items-center justify-start space-x-2 ${
+                        projectTab === 'cash-in'
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                      </svg>
+                      <span>Cash In</span>
+                    </button>
+
+                    <button
+                      onClick={() => setProjectTab('cashout-history')}
+                      className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-colors flex items-center justify-start space-x-2 ${
+                        projectTab === 'cashout-history'
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Cash Out History</span>
+                    </button>
+
+                    <button
+                      onClick={() => setProjectTab('cashin-history')}
+                      className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-colors flex items-center justify-start space-x-2 ${
+                        projectTab === 'cashin-history'
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Cash In History</span>
+                    </button>
+
+                    <button
+                      onClick={() => setProjectTab('accounts')}
+                      className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-colors flex items-center justify-start space-x-2 ${
+                        projectTab === 'accounts'
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
+                      }`}
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>Accounts</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right Content Area - 70% */}
+                <div className="lg:col-span-2">
+                  {projectTab === 'cash-in' && (
+                    <div className="bg-white rounded-2xl shadow-sm p-6">
+                      <CashIn 
+                        projectId={selectedProject.id} 
+                        onCashInCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
+                      />
+                    </div>
+                  )}
+                  {projectTab === 'cash-out' && (
+                    <div className="bg-white rounded-2xl shadow-sm p-6">
+                      <CashOut 
+                        projectId={selectedProject.id}
+                        onCashOutCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
+                      />
+                    </div>
+                  )}
+                  {projectTab === 'cashout-history' && (
+                    <div className="bg-white rounded-2xl shadow-sm p-6">
+                      <CashOutHistory 
+                        projectId={selectedProject.id}
+                        refreshTrigger={refreshHistoryTrigger}
+                      />
+                    </div>
+                  )}
+                  {projectTab === 'cashin-history' && (
+                    <div className="bg-white rounded-2xl shadow-sm p-6">
+                      <CashHistory 
+                        projectId={selectedProject.id} 
+                        refreshTrigger={refreshHistoryTrigger}
+                      />
+                    </div>
+                  )}
+                  {projectTab === 'accounts' && (
+                    <div className="bg-white rounded-2xl shadow-sm p-6">
+                      <Accounts />
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Projects Button */}
-              <button
-                onClick={() => setShowProjectsModal(true)}
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-2xl font-semibold text-lg transition-colors flex items-center justify-center space-x-2"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M3 7a2 2 0 012-2h14a2 2 0 012 2m0 0V5a2 2 0 00-2-2H5a2 2 0 00-2 2v2" />
-                </svg>
-                <span>Projects</span>
-              </button>
-
-              {/* Menu Items */}
-              <div className="space-y-4 max-w-2xl mx-auto hidden md:block">
+              {/* Menu Items for MD screens */}
+              <div className="space-y-4 max-w-2xl mx-auto hidden md:block lg:hidden">
                 <button
                   onClick={() => setProjectTab('cash-out')}
                   className={`w-full px-6 py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center space-x-3 ${
@@ -472,8 +628,8 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Content Area */}
-              <div className="max-w-2xl mx-auto">
+              {/* Content Area for MD screens */}
+              <div className="max-w-2xl mx-auto lg:hidden">
                 {projectTab === 'cash-in' && (
                   <div className="bg-white rounded-2xl shadow-sm p-6">
                     <CashIn 
