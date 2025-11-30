@@ -38,7 +38,14 @@ export default function Login() {
       setUsername('');
       setPassword('');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Login failed');
+      // Show user-friendly message for wrong credentials
+      if (err.response?.status === 401 || err.response?.status === 400) {
+        setError('Invalid username or password');
+      } else if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError('Login failed. Please try again.');
+      }
       console.error('Login error:', err);
     } finally {
       setLoading(false);
@@ -103,7 +110,7 @@ export default function Login() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full border border-gray-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-gray-700 placeholder-gray-400"
-                  placeholder="you@example.com"
+                  placeholder=" "
                   required
                 />
               </div>
