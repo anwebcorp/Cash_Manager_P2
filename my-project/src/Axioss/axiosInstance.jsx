@@ -25,15 +25,14 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Only handle 401 errors for token refresh, don't redirect on other errors
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) {
-        // No refresh token, redirect to login
+        // No refresh token, reject and let component handle it
         localStorage.removeItem('access_token');
-        window.location.href = '/login';
         return Promise.reject(error);
       }
 
@@ -49,10 +48,9 @@ axiosInstance.interceptors.response.use(
           throw new Error('No access token in refresh response');
         }
       } catch (refreshError) {
-        // Refresh token invalid or expired: clear storage and redirect to login
+        // Refresh token invalid or expired: clear storage and let component handle it
         localStorage.removeItem('access_token');
         localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
         return Promise.reject(refreshError);
       }
     }
