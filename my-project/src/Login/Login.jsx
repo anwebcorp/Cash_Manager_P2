@@ -41,10 +41,8 @@ export default function Login() {
       setPassword('');
     } catch (err) {
       // Redirect to WrongLogin page for authentication errors
-      if (err.response?.status === 401 || err.response?.status === 400) {
+      if (err.response?.status === 401 || err.response?.status === 400 || err.response?.status === 404) {
         navigate('/wronglogin');
-      } else if (err.response?.status === 404) {
-        setError('Login service not found. Please check your connection and try again.');
       } else if (err.response?.status >= 500) {
         setError('Server error. Please try again later.');
       } else if (err.response?.data?.detail) {
