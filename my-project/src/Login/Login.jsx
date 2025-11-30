@@ -40,19 +40,21 @@ export default function Login() {
       setUsername('');
       setPassword('');
     } catch (err) {
+      setLoading(false);
       // Redirect to WrongLogin page for authentication errors
       if (err.response?.status === 401 || err.response?.status === 400 || err.response?.status === 404) {
-        navigate('/wronglogin');
+        navigate('/wronglogin', { replace: true });
       } else if (err.response?.status >= 500) {
         setError('Server error. Please try again later.');
       } else if (err.response?.data?.detail) {
-        navigate('/wronglogin');
+        navigate('/wronglogin', { replace: true });
       } else if (err.message === 'Network Error') {
         setError('Network error. Please check your internet connection.');
       } else {
-        navigate('/wronglogin');
+        navigate('/wronglogin', { replace: true });
       }
       console.error('Login error:', err);
+      return;
     } finally {
       setLoading(false);
     }
