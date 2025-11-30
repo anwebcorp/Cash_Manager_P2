@@ -19,10 +19,12 @@ export default function Home() {
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const [refreshHistoryTrigger, setRefreshHistoryTrigger] = useState(0);
+  const [fetchError, setFetchError] = useState('');
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
+        setFetchError('');
         const response = await axiosInstance.get('list/projects/');
         setProjects(response.data);
         if (response.data.length > 0 && !selectedProject) {
@@ -30,6 +32,7 @@ export default function Home() {
         }
       } catch (err) {
         console.error('Failed to fetch projects:', err);
+        setFetchError('Unable to load projects. Server may be down.');
       }
     };
 
@@ -61,8 +64,11 @@ export default function Home() {
       setProjects([...projects, response.data]);
       setNewProjectName('');
       setShowAddProject(false);
+      setFetchError('');
     } catch (err) {
       console.error('Failed to create project:', err);
+      const errorMsg = err.response?.data?.detail || err.response?.data?.name?.[0] || 'Failed to create project. Please try again.';
+      setFetchError(errorMsg);
     }
   };
 
@@ -164,7 +170,7 @@ export default function Home() {
 
         {/* Main Content */}
         <div className="px-6 py-8">
-          {selectedProject ? (
+          {selectedProject || showAddProject ? (
             <div className="space-y-8">
               {/* Projects Horizontal Scroll Section */}
               <div className="space-y-4">
@@ -181,11 +187,22 @@ export default function Home() {
                   )}
                 </div>
 
+                {fetchError && (
+                  <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-sm">
+                    {fetchError}
+                  </div>
+                )}
+
                 {/* Create New Project Form */}
                 {showAddProject && (
                   <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">Create New Project</h3>
                     <form onSubmit={handleAddProject} className="space-y-4">
+                      {fetchError && (
+                        <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg text-sm">
+                          {fetchError}
+                        </div>
+                      )}
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">Project Name</label>
                         <input
@@ -209,6 +226,7 @@ export default function Home() {
                           onClick={() => {
                             setShowAddProject(false);
                             setNewProjectName('');
+                            setFetchError('');
                           }}
                           className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 font-semibold transition-colors"
                         >
@@ -421,41 +439,49 @@ export default function Home() {
 
                 {/* Right Content Area - 70% */}
                 <div className="lg:col-span-2">
-                  {projectTab === 'cash-in' && (
-                    <div className="bg-white rounded-2xl shadow-sm p-6">
-                      <CashIn 
-                        projectId={selectedProject.id} 
-                        onCashInCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
-                      />
-                    </div>
-                  )}
-                  {projectTab === 'cash-out' && (
-                    <div className="bg-white rounded-2xl shadow-sm p-6">
-                      <CashOut 
-                        projectId={selectedProject.id}
-                        onCashOutCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
-                      />
-                    </div>
-                  )}
-                  {projectTab === 'cashout-history' && (
-                    <div className="bg-white rounded-2xl shadow-sm p-6">
-                      <CashOutHistory 
-                        projectId={selectedProject.id}
-                        refreshTrigger={refreshHistoryTrigger}
-                      />
-                    </div>
-                  )}
-                  {projectTab === 'cashin-history' && (
-                    <div className="bg-white rounded-2xl shadow-sm p-6">
-                      <CashHistory 
-                        projectId={selectedProject.id} 
-                        refreshTrigger={refreshHistoryTrigger}
-                      />
-                    </div>
-                  )}
-                  {projectTab === 'accounts' && (
-                    <div className="bg-white rounded-2xl shadow-sm p-6">
-                      <Accounts />
+                  {selectedProject ? (
+                    <>
+                      {projectTab === 'cash-in' && (
+                        <div className="bg-white rounded-2xl shadow-sm p-6">
+                          <CashIn 
+                            projectId={selectedProject.id} 
+                            onCashInCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
+                          />
+                        </div>
+                      )}
+                      {projectTab === 'cash-out' && (
+                        <div className="bg-white rounded-2xl shadow-sm p-6">
+                          <CashOut 
+                            projectId={selectedProject.id}
+                            onCashOutCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
+                          />
+                        </div>
+                      )}
+                      {projectTab === 'cashout-history' && (
+                        <div className="bg-white rounded-2xl shadow-sm p-6">
+                          <CashOutHistory 
+                            projectId={selectedProject.id}
+                            refreshTrigger={refreshHistoryTrigger}
+                          />
+                        </div>
+                      )}
+                      {projectTab === 'cashin-history' && (
+                        <div className="bg-white rounded-2xl shadow-sm p-6">
+                          <CashHistory 
+                            projectId={selectedProject.id} 
+                            refreshTrigger={refreshHistoryTrigger}
+                          />
+                        </div>
+                      )}
+                      {projectTab === 'accounts' && (
+                        <div className="bg-white rounded-2xl shadow-sm p-6">
+                          <Accounts />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+                      <p className="text-gray-500">Loading projects...</p>
                     </div>
                   )}
                 </div>
@@ -630,56 +656,71 @@ export default function Home() {
 
               {/* Content Area for MD screens */}
               <div className="max-w-2xl mx-auto lg:hidden">
-                {projectTab === 'cash-in' && (
-                  <div className="bg-white rounded-2xl shadow-sm p-6">
-                    <CashIn 
-                      projectId={selectedProject.id} 
-                      onCashInCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
-                    />
-                  </div>
-                )}
-                {projectTab === 'cash-out' && (
-                  <div className="bg-white rounded-2xl shadow-sm p-6">
-                    <CashOut 
-                      projectId={selectedProject.id}
-                      onCashOutCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
-                    />
-                  </div>
-                )}
-                {projectTab === 'cashout-history' && (
-                  <div className="bg-white rounded-2xl shadow-sm p-6">
-                    <CashOutHistory 
-                      projectId={selectedProject.id}
-                      refreshTrigger={refreshHistoryTrigger}
-                    />
-                  </div>
-                )}
-                {projectTab === 'cashin-history' && (
-                  <div className="bg-white rounded-2xl shadow-sm p-6">
-                    <CashHistory 
-                      projectId={selectedProject.id} 
-                      refreshTrigger={refreshHistoryTrigger}
-                    />
-                  </div>
-                )}
-                {projectTab === 'accounts' && (
-                  <div className="bg-white rounded-2xl shadow-sm p-6">
-                    <Accounts />
-                  </div>
-                )}
-                {projectTab === 'history' && (
-                  <div className="bg-white rounded-2xl shadow-sm p-6">
-                    <CashHistory 
-                      projectId={selectedProject.id} 
-                      refreshTrigger={refreshHistoryTrigger}
-                    />
+                {selectedProject ? (
+                  <>
+                    {projectTab === 'cash-in' && (
+                      <div className="bg-white rounded-2xl shadow-sm p-6">
+                        <CashIn 
+                          projectId={selectedProject.id} 
+                          onCashInCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
+                        />
+                      </div>
+                    )}
+                    {projectTab === 'cash-out' && (
+                      <div className="bg-white rounded-2xl shadow-sm p-6">
+                        <CashOut 
+                          projectId={selectedProject.id}
+                          onCashOutCreated={() => setRefreshHistoryTrigger(prev => prev + 1)}
+                        />
+                      </div>
+                    )}
+                    {projectTab === 'cashout-history' && (
+                      <div className="bg-white rounded-2xl shadow-sm p-6">
+                        <CashOutHistory 
+                          projectId={selectedProject.id}
+                          refreshTrigger={refreshHistoryTrigger}
+                        />
+                      </div>
+                    )}
+                    {projectTab === 'cashin-history' && (
+                      <div className="bg-white rounded-2xl shadow-sm p-6">
+                        <CashHistory 
+                          projectId={selectedProject.id} 
+                          refreshTrigger={refreshHistoryTrigger}
+                        />
+                      </div>
+                    )}
+                    {projectTab === 'accounts' && (
+                      <div className="bg-white rounded-2xl shadow-sm p-6">
+                        <Accounts />
+                      </div>
+                    )}
+                    {projectTab === 'history' && (
+                      <div className="bg-white rounded-2xl shadow-sm p-6">
+                        <CashHistory 
+                          projectId={selectedProject.id} 
+                          refreshTrigger={refreshHistoryTrigger}
+                        />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+                    <p className="text-gray-500">Loading projects...</p>
                   </div>
                 )}
               </div>
             </div>
           ) : (
             <div className="bg-white rounded-2xl shadow-sm p-8 text-center max-w-2xl mx-auto">
-              <p className="text-gray-500 text-lg">No projects available</p>
+              <p className="text-gray-500 text-lg mb-6">No projects available</p>
+              <button
+                onClick={() => setShowAddProject(true)}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-6 rounded-lg font-semibold transition-colors inline-flex items-center space-x-2"
+              >
+                <span>+</span>
+                <span>Create Your First Project</span>
+              </button>
             </div>
           )}
         </div>

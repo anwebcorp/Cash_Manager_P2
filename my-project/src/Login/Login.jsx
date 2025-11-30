@@ -38,11 +38,17 @@ export default function Login() {
       setUsername('');
       setPassword('');
     } catch (err) {
-      // Show user-friendly message for wrong credentials
+      // Show user-friendly message based on error type
       if (err.response?.status === 401 || err.response?.status === 400) {
         setError('Invalid username or password');
+      } else if (err.response?.status === 404) {
+        setError('Login service not found. Please check your connection and try again.');
+      } else if (err.response?.status >= 500) {
+        setError('Server error. Please try again later.');
       } else if (err.response?.data?.detail) {
         setError(err.response.data.detail);
+      } else if (err.message === 'Network Error') {
+        setError('Network error. Please check your internet connection.');
       } else {
         setError('Login failed. Please try again.');
       }
