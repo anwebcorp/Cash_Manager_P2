@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useAuth from '../Axioss/useAuth.jsx';
 import axiosInstance from '../Axioss/axiosInstance.jsx';
 
 export default function Login() {
+  const navigate = useNavigate();
   const { auth, setAuth } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -38,19 +40,19 @@ export default function Login() {
       setUsername('');
       setPassword('');
     } catch (err) {
-      // Show user-friendly message based on error type
+      // Redirect to WrongLogin page for authentication errors
       if (err.response?.status === 401 || err.response?.status === 400) {
-        setError('Invalid username or password');
+        navigate('/wronglogin');
       } else if (err.response?.status === 404) {
         setError('Login service not found. Please check your connection and try again.');
       } else if (err.response?.status >= 500) {
         setError('Server error. Please try again later.');
       } else if (err.response?.data?.detail) {
-        setError(err.response.data.detail);
+        navigate('/wronglogin');
       } else if (err.message === 'Network Error') {
         setError('Network error. Please check your internet connection.');
       } else {
-        setError('Login failed. Please try again.');
+        navigate('/wronglogin');
       }
       console.error('Login error:', err);
     } finally {
