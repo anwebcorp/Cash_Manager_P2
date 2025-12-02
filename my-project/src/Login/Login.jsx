@@ -39,6 +39,11 @@ export default function Login() {
       setSuccess(`Login successful! Welcome ${user.username}`);
       setUsername('');
       setPassword('');
+      
+      // Redirect to home page after successful login
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 500);
     } catch (err) {
       setLoading(false);
       // Redirect to WrongLogin page for authentication errors

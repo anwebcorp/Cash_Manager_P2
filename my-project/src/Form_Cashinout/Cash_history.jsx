@@ -11,6 +11,7 @@ export default function CashHistory({ projectId, refreshTrigger = 0 }) {
   const [error, setError] = useState('');
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [recordImages, setRecordImages] = useState([]);
+  const [zoomedImage, setZoomedImage] = useState(null);
 
   // Fetch project history and accounts on mount or when projectId changes
   useEffect(() => {
@@ -96,6 +97,17 @@ export default function CashHistory({ projectId, refreshTrigger = 0 }) {
     // Placeholder for future functionality
   };
 
+  // Handle ESC key to close zoom
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === 'Escape' && zoomedImage) {
+        setZoomedImage(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [zoomedImage]);
+
   if (!auth?.user) {
     return (
       <div className="min-h-screen bg-gray-100 p-8">
@@ -108,6 +120,90 @@ export default function CashHistory({ projectId, refreshTrigger = 0 }) {
 
   return (
     <div className="w-full">
+      {/* Image Zoom Modal - HIGHEST Z-INDEX */}
+      {zoomedImage && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.98)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '0',
+            margin: '0',
+            width: '100vw',
+            height: '100vh',
+            overflow: 'hidden'
+          }}
+          onClick={() => setZoomedImage(null)}
+        >
+          <img
+            src={zoomedImage}
+            alt="Zoomed"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              padding: '0',
+              margin: '0',
+              display: 'block'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            onClick={() => setZoomedImage(null)}
+            style={{
+              position: 'fixed',
+              top: '30px',
+              right: '30px',
+              backgroundColor: 'white',
+              borderRadius: '50%',
+              padding: '16px',
+              border: 'none',
+              cursor: 'pointer',
+              boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
+              zIndex: 100000,
+              transition: 'all 0.3s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#f0f0f0';
+              e.target.style.transform = 'scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = 'white';
+              e.target.style.transform = 'scale(1)';
+            }}
+            title="Close (ESC)"
+          >
+            <svg style={{ width: '28px', height: '28px', color: '#1f2937' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          <div 
+            style={{
+              position: 'fixed',
+              bottom: '30px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              color: 'white',
+              padding: '12px 24px',
+              borderRadius: '12px',
+              fontSize: '16px',
+              zIndex: 100000,
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}
+          >
+            Press ESC or click outside to close
+          </div>
+        </div>
+      )}
+
       {/* Record Details Modal */}
       {selectedRecord && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
@@ -143,7 +239,7 @@ export default function CashHistory({ projectId, refreshTrigger = 0 }) {
                 <div>
                   <p className="text-sm text-gray-600 font-semibold">Amount</p>
                   <p className={`text-lg font-bold ${selectedRecord.type === 'cashin' ? 'text-green-600' : 'text-red-600'}`}>
-                    ${typeof selectedRecord.amount === 'number' ? selectedRecord.amount.toFixed(2) : selectedRecord.amount}
+                    Rs. {typeof selectedRecord.amount === 'number' ? selectedRecord.amount : selectedRecord.amount}
                   </p>
                 </div>
                 <div>
@@ -181,10 +277,10 @@ export default function CashHistory({ projectId, refreshTrigger = 0 }) {
                           src={image.image}
                           alt={`Receipt ${image.id}`}
                           className="w-full h-48 object-cover rounded-lg border border-gray-300 hover:border-blue-500 transition-colors cursor-pointer"
-                          onClick={() => window.open(image.image, '_blank')}
+                          onClick={() => setZoomedImage(image.image)}
                         />
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-colors flex items-center justify-center">
-                          <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity">View</span>
+                          <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity">🔍 Zoom</span>
                         </div>
                       </div>
                     ))}
@@ -238,7 +334,7 @@ export default function CashHistory({ projectId, refreshTrigger = 0 }) {
           <option value="">Select</option>
           {accounts.map(acc => (
             <option key={acc.id} value={acc.id}>
-              {acc.name} (Balance: ${acc.balance})
+              {acc.name} (Balance: Rs. {acc.balance})
             </option>
           ))}
         </select>
@@ -251,7 +347,7 @@ export default function CashHistory({ projectId, refreshTrigger = 0 }) {
             <div>
               <p className="text-sm font-semibold text-emerald-700 mb-2">Total Cash In</p>
               <p className="text-4xl font-bold text-emerald-600">
-                ${cashInHistory.reduce((sum, record) => sum + parseFloat(record.amount || 0), 0).toFixed(2)}
+                Rs. {cashInHistory.reduce((sum, record) => sum + parseFloat(record.amount || 0), 0)}
               </p>
               <p className="text-sm text-emerald-600 mt-2">{cashInHistory.length} transaction{cashInHistory.length !== 1 ? 's' : ''}</p>
             </div>
@@ -290,7 +386,7 @@ export default function CashHistory({ projectId, refreshTrigger = 0 }) {
                   )}
                 </div>
                 <div className="text-right">
-                  <p className="text-lg font-bold text-green-600">${record.amount}</p>
+                  <p className="text-lg font-bold text-green-600">Rs. {record.amount}</p>
                 </div>
               </div>
             </div>

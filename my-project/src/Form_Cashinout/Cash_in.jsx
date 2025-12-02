@@ -181,7 +181,7 @@ export default function CashIn({ projectId = null, onCashInCreated = null }) {
               <option value="">-- Select Account --</option>
               {accounts.map(acc => (
                 <option key={acc.id} value={acc.id}>
-                  {acc.name} (Balance: ${acc.balance})
+                  {acc.name} (Balance: Rs. {acc.balance})
                 </option>
               ))}
             </select>
@@ -195,8 +195,8 @@ export default function CashIn({ projectId = null, onCashInCreated = null }) {
               value={formData.amount}
               onChange={handleInputChange}
               className="w-full border p-2 rounded text-sm md:text-base"
-              placeholder="0.00"
-              step="0.01"
+              placeholder="0"
+              step="1"
               required
             />
           </div>
