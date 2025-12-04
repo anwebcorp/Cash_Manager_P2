@@ -181,7 +181,7 @@ export default function CashIn({ projectId = null, onCashInCreated = null }) {
               <option value="">-- Select Account --</option>
               {accounts.map(acc => (
                 <option key={acc.id} value={acc.id}>
-                  {acc.name} (Balance: Rs. {acc.balance})
+                  {acc.name}
                 </option>
               ))}
             </select>

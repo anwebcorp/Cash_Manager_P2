@@ -134,6 +134,48 @@ export default function AllCashHistory() {
     setError('');
   };
 
+  const downloadImage = async (imageUrl, imageName) => {
+    try {
+      // Try to download using axios with auth headers
+      const response = await axiosInstance({
+        url: imageUrl,
+        method: 'GET',
+        responseType: 'blob',
+        timeout: 30000
+      });
+      
+      // Create object URL from the blob
+      const url = window.URL.createObjectURL(response.data);
+      
+      // Create and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = imageName || imageUrl.split('/').pop() || 'image.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Cleanup URL object after download starts
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 250);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      // Fallback to direct download if axios fails
+      try {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = imageName || imageUrl.split('/').pop() || 'image.jpg';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (fallbackError) {
+        alert('Unable to download image. Please try again or download manually.');
+      }
+    }
+  };
+
   if (!auth?.user) {
     return null;
   }
@@ -256,7 +298,7 @@ export default function AllCashHistory() {
                 <div>
                   <p className="text-sm text-gray-600 font-semibold">Amount</p>
                   <p className={`text-lg font-bold ${type === 'cash-in' ? 'text-green-600' : 'text-red-600'}`}>
-                    Rs. {typeof selectedRecord.amount === 'number' ? selectedRecord.amount : selectedRecord.amount}
+                    Rs. {Math.round(typeof selectedRecord.amount === 'number' ? selectedRecord.amount : selectedRecord.amount)}
                   </p>
                 </div>
                 <div>
@@ -294,9 +336,18 @@ export default function AllCashHistory() {
                           className="w-full h-48 object-cover rounded-lg border border-gray-300 hover:border-blue-500 transition-colors cursor-pointer"
                           onClick={() => setZoomedImage(image.image)}
                         />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-colors flex items-center justify-center">
-                          <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity">🔍 Zoom</span>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            downloadImage(image.image, `receipt-${image.id}.jpg`);
+                          }}
+                          title="Download image"
+                          className="absolute top-2 right-2 p-2 bg-white rounded-full hover:bg-gray-200 transition-colors shadow-lg"
+                        >
+                          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -428,7 +479,6 @@ export default function AllCashHistory() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-semibold text-gray-900">{account.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1">Balance: Rs. {account.balance}</p>
                     </div>
                     <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -470,7 +520,7 @@ export default function AllCashHistory() {
                       Total {type === 'cash-in' ? 'Cash In' : 'Cash Out'}
                     </p>
                     <p className={`text-4xl font-bold ${type === 'cash-in' ? 'text-emerald-600' : 'text-red-600'}`}>
-                      Rs. {history.reduce((sum, record) => sum + parseFloat(record.amount || 0), 0)}
+                      Rs. {Math.round(history.reduce((sum, record) => sum + parseFloat(record.amount || 0), 0))}
                     </p>
                     <p className={`text-sm mt-2 ${type === 'cash-in' ? 'text-emerald-600' : 'text-red-600'}`}>
                       {history.length} transaction{history.length !== 1 ? 's' : ''}
@@ -507,7 +557,7 @@ export default function AllCashHistory() {
                         </div>
                         <div className="text-right">
                           <p className={`text-lg font-bold ${type === 'cash-in' ? 'text-green-600' : 'text-red-600'}`}>
-                            Rs. {recordData.amount}
+                            Rs. {Math.round(recordData.amount)}
                           </p>
                         </div>
                       </div>

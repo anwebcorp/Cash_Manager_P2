@@ -95,6 +95,48 @@ export default function CashOutHistory({ projectId, refreshTrigger = 0 }) {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [zoomedImage]);
 
+  const downloadImage = async (imageUrl, imageName) => {
+    try {
+      // Try to download using axios with auth headers
+      const response = await axiosInstance({
+        url: imageUrl,
+        method: 'GET',
+        responseType: 'blob',
+        timeout: 30000
+      });
+      
+      // Create object URL from the blob
+      const url = window.URL.createObjectURL(response.data);
+      
+      // Create and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = imageName || imageUrl.split('/').pop() || 'image.jpg';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Cleanup URL object after download starts
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 250);
+    } catch (error) {
+      console.error('Error downloading image:', error);
+      // Fallback to direct download if axios fails
+      try {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = imageName || imageUrl.split('/').pop() || 'image.jpg';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (fallbackError) {
+        alert('Unable to download image. Please try again or download manually.');
+      }
+    }
+  };
+
   return (
     <div className="w-full">
       {/* Image Zoom Modal - HIGHEST Z-INDEX */}
@@ -211,7 +253,7 @@ export default function CashOutHistory({ projectId, refreshTrigger = 0 }) {
                 <div>
                   <p className="text-sm text-gray-600 font-semibold">Amount</p>
                   <p className="text-lg font-bold text-red-600">
-                    Rs. {typeof selectedRecord.amount === 'number' ? selectedRecord.amount : selectedRecord.amount}
+                    Rs. {Math.round(typeof selectedRecord.amount === 'number' ? selectedRecord.amount : selectedRecord.amount)}
                   </p>
                 </div>
                 <div>
@@ -243,9 +285,18 @@ export default function CashOutHistory({ projectId, refreshTrigger = 0 }) {
                           className="w-full h-48 object-cover rounded-lg border border-gray-300 hover:border-blue-500 transition-colors cursor-pointer"
                           onClick={() => setZoomedImage(image.image)}
                         />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 rounded-lg transition-colors flex items-center justify-center">
-                          <span className="text-white opacity-0 group-hover:opacity-100 transition-opacity">🔍 Zoom</span>
-                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            downloadImage(image.image, `receipt-${image.id}.jpg`);
+                          }}
+                          title="Download image"
+                          className="absolute top-2 right-2 p-2 bg-white rounded-full hover:bg-gray-200 transition-colors shadow-lg"
+                        >
+                          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -333,7 +384,7 @@ export default function CashOutHistory({ projectId, refreshTrigger = 0 }) {
                   <div>
                     <p className="text-sm font-semibold text-red-700 mb-2">Total Cash Out</p>
                     <p className="text-4xl font-bold text-red-600">
-                      Rs. {cashOutHistory.reduce((sum, record) => sum + parseFloat(record.amount || 0), 0)}
+                      Rs. {Math.round(cashOutHistory.reduce((sum, record) => sum + parseFloat(record.amount || 0), 0))}
                     </p>
                     <p className="text-sm text-red-600 mt-2">{cashOutHistory.length} transaction{cashOutHistory.length !== 1 ? 's' : ''}</p>
                   </div>
@@ -363,7 +414,7 @@ export default function CashOutHistory({ projectId, refreshTrigger = 0 }) {
                         )}
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-red-600">Rs. {record.amount}</p>
+                        <p className="text-lg font-bold text-red-600">Rs. {Math.round(record.amount)}</p>
                       </div>
                     </div>
                   </div>
