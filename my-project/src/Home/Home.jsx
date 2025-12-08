@@ -152,53 +152,55 @@ export default function Home() {
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
         {/* Header */}
         <div className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-40">
-          <div className="px-6 py-4">
+          <div className="px-4 sm:px-6 py-4">
             {showAddProject ? (
-              <div className="flex gap-3 items-center">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center">
                 <input
                   type="text"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
                   placeholder="Enter project name..."
-                  className="flex-1 border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm md:text-base"
+                  className="flex-1 border border-gray-300 px-3 sm:px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
                   onKeyPress={(e) => e.key === 'Enter' && handleAddProject(e)}
                   autoFocus
                 />
-                <button
-                  onClick={handleAddProject}
-                  className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 md:px-6 py-2 rounded-lg font-semibold transition-colors text-sm md:text-base whitespace-nowrap"
-                >
-                  Create
-                </button>
-                <button
-                  onClick={() => {
-                    setShowAddProject(false);
-                    setNewProjectName('');
-                    setFetchError('');
-                  }}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 md:px-6 py-2 rounded-lg font-semibold transition-colors text-sm md:text-base whitespace-nowrap"
-                >
-                  Cancel
-                </button>
+                <div className="flex gap-2 sm:gap-3">
+                  <button
+                    onClick={handleAddProject}
+                    className="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white px-3 sm:px-6 py-2 rounded-lg font-semibold transition-colors text-sm whitespace-nowrap"
+                  >
+                    Create
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowAddProject(false);
+                      setNewProjectName('');
+                      setFetchError('');
+                    }}
+                    className="flex-1 sm:flex-none bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 sm:px-6 py-2 rounded-lg font-semibold transition-colors text-sm whitespace-nowrap"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-3 flex-1">
-                  <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                <div className="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
+                  <div className="w-8 sm:w-10 h-8 sm:h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-bold text-sm sm:text-lg flex-shrink-0">
                     $
                   </div>
-                  <div className="flex flex-col">
-                    <h1 className="text-2xl font-bold text-gray-900">Cash Manager</h1>
-                    <p className="md:block text-sm text-emerald-600 font-semibold mt-1">Total Cash In: Rs. {totalCashIn}</p>
+                  <div className="flex flex-col min-w-0">
+                    <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">Cash Manager</h1>
+                    <p className="hidden sm:block text-xs sm:text-sm text-emerald-600 font-semibold mt-1 truncate">Total Cash In: Rs. {totalCashIn}</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                   <button
                     onClick={() => setShowAddProject(!showAddProject)}
-                    className="hidden md:flex items-center space-x-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                    className="hidden md:flex items-center space-x-2 bg-emerald-500 hover:bg-emerald-600 text-white px-3 sm:px-4 py-2 rounded-lg font-semibold transition-colors text-sm"
                   >
                     <span>+</span>
-                    <span>New Project</span>
+                    <span className="hidden sm:inline">New Project</span>
                   </button>
                   <button
                     onClick={() => {
@@ -207,10 +209,9 @@ export default function Home() {
                       localStorage.removeItem('user');
                       window.location.reload();
                     }}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-gray-900 font-semibold"
+                    className="text-gray-700 hover:text-gray-900 font-semibold text-sm px-3 py-2 rounded hover:bg-gray-100 transition-colors"
                   >
-                    <span></span>
-                    <span>Logout</span>
+                    Logout
                   </button>
                 </div>
               </div>
