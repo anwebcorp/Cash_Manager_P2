@@ -928,11 +928,33 @@ export default function Projects() {
   // Projects List View
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      {/* Universal Header for All Screens */}
+      <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50 w-full">
+        <div className="px-4 md:px-6 py-4 flex items-center justify-between max-w-full">
+          <h1 className="text-2xl font-bold text-gray-900 hidden sm:block">Projects</h1>
+          <h1 className="text-lg font-bold text-gray-900 sm:hidden">Projects</h1>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className={`px-4 md:px-6 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 whitespace-nowrap ${
+              showForm
+                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-blue-500 text-white hover:bg-blue-600'
+            }`}
+          >
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            <span className="hidden sm:inline">{showForm ? 'Cancel' : '+ New Project'}</span>
+            <span className="sm:hidden text-lg">{showForm ? '✕' : '+'}</span>
+          </button>
+        </div>
+      </div>
+
       {/* Desktop Layout */}
-      <div className="hidden lg:grid lg:grid-cols-4 lg:gap-8 px-6 py-8 pt-24">
+      <div className="hidden md:grid md:grid-cols-4 md:gap-8 px-6 py-8 pt-20 z-0">
         {/* Left Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="space-y-3 sticky top-24">
+        <div className="md:col-span-1 z-20">
+          <div className="space-y-3 sticky top-24 overflow-visible z-20">
             <h3 className="text-lg font-bold text-gray-900 px-2">Projects</h3>
             
             {/* Projects Dropdown */}
@@ -971,26 +993,11 @@ export default function Projects() {
             </div>
 
             <hr className="my-4" />
-
-            {/* Create New Project Button */}
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className={`w-full px-4 py-3 rounded-lg font-semibold text-sm transition-colors flex items-center justify-start space-x-2 ${
-                showForm
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-900 hover:bg-gray-100 border border-gray-200'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              <span>New Project</span>
-            </button>
           </div>
         </div>
 
         {/* Right Content Area */}
-        <div className="lg:col-span-3">
+        <div className="md:col-span-3">
           <div className="bg-white rounded-2xl shadow-sm p-6">
             {error && <p className="text-red-500 mb-4 p-3 bg-red-100 rounded">{error}</p>}
             {success && <p className="text-green-500 mb-4 p-3 bg-green-100 rounded">{success}</p>}
@@ -1085,16 +1092,10 @@ export default function Projects() {
       </div>
 
       {/* Mobile & Tablet View */}
-      <div className="lg:hidden px-6 py-8 pt-24">
+      <div className="md:hidden px-6 py-8 pt-20">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">Projects</h1>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              {showForm ? 'Cancel' : '+ New Project'}
-            </button>
+            <h1 className="text-xl font-bold">Projects</h1>
           </div>
 
           {error && <p className="text-red-500 mb-4 p-3 bg-red-100 rounded">{error}</p>}
