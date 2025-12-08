@@ -248,6 +248,46 @@ export default function Projects() {
   if (selectedProject) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+        {/* Left Side Sticky Button */}
+        <div style={{
+          position: 'fixed',
+          left: window.innerWidth >= 1024 ? 'calc(50% - 360px)' : '20px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: '9999',
+        }}>
+          <button
+            onClick={() => setSelectedProject(null)}
+            style={{
+              width: '50px',
+              height: '50px',
+              borderRadius: '50%',
+              border: 'none',
+              backgroundColor: '#6b7280',
+              color: 'white',
+              fontSize: '28px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontWeight: 'bold',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.15)';
+              e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
+            }}
+            title="Back to Projects"
+          >
+            ←
+          </button>
+        </div>
+
         {/* Desktop Layout - Left Sidebar + Right Content */}
         <div className="hidden lg:grid lg:grid-cols-4 lg:gap-8 px-6 py-8 pt-24">
           {/* Left Sidebar */}
@@ -927,28 +967,55 @@ export default function Projects() {
 
   // Projects List View
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      {/* Universal Header for All Screens */}
-      <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-50 w-full">
-        <div className="px-4 md:px-6 py-4 flex items-center justify-between max-w-full">
-          <h1 className="text-2xl font-bold text-gray-900 hidden sm:block">Projects</h1>
-          <h1 className="text-lg font-bold text-gray-900 sm:hidden">Projects</h1>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className={`px-4 md:px-6 py-2 rounded-lg font-semibold text-sm transition-all flex items-center gap-2 whitespace-nowrap ${
-              showForm
-                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                : 'bg-blue-500 text-white hover:bg-blue-600'
-            }`}
-          >
-            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            <span className="hidden sm:inline">{showForm ? 'Cancel' : '+ New Project'}</span>
-            <span className="sm:hidden text-lg">{showForm ? '✕' : '+'}</span>
-          </button>
-        </div>
+    <>
+      {/* Left Side Sticky Button */}
+      <div style={{
+        position: 'fixed',
+        left: window.innerWidth >= 768 ? 'calc(50% - 360px)' : '20px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        zIndex: '9999',
+      }}>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          style={{
+            width: '50px',
+            height: '50px',
+            borderRadius: '50%',
+            border: 'none',
+            backgroundColor: showForm ? '#dc2626' : '#2563eb',
+            color: 'white',
+            fontSize: '28px',
+            cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontWeight: 'bold',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'scale(1.15)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.5)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
+          }}
+          title={showForm ? 'Close' : 'New Project'}
+        >
+          {showForm ? '✕' : '+'}
+        </button>
       </div>
+
+      <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+        {/* Universal Header for All Screens */}
+        <div className="fixed top-0 left-0 right-0 bg-white shadow-md z-40 w-full">
+          <div className="px-4 md:px-6 py-4 flex items-center justify-between max-w-full">
+            <h1 className="text-2xl font-bold text-gray-900 hidden sm:block">Projects</h1>
+            <h1 className="text-lg font-bold text-gray-900 sm:hidden">Projects</h1>
+          </div>
+        </div>
 
       {/* Desktop Layout */}
       <div className="hidden md:grid md:grid-cols-4 md:gap-8 px-6 py-8 pt-20 z-0">
@@ -1179,6 +1246,7 @@ export default function Projects() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
